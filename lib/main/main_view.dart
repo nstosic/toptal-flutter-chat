@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'main_bloc.dart';
 import 'main_state.dart';
 import 'main_user_item.dart';
-import '../login/login_view.dart';
 import '../util/constants.dart';
 import '../navigation_helper.dart';
 import '../model/chatroom.dart';
@@ -93,7 +92,7 @@ class MainWidget extends StatelessWidget {
               );
             } else {
               content = ListView.builder(
-                padding: EdgeInsets.all(UIConstants.STANDARD_PADDING),
+                padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
                 itemBuilder: (context, index) {
                   return InkWell(
                       child: _buildItem(state.chatrooms[index]),
