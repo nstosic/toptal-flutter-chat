@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../util/constants.dart';
 import '../navigation_helper.dart';
 import '../model/user.dart';
+import '../model/chatroom.dart';
 import '../main/main_user_item.dart';
-import '../instant_messaging/instant_messaging_view.dart';
 import 'create_chatroom_bloc.dart';
 import 'create_chatroom_state.dart';
 
@@ -23,7 +23,7 @@ class _CreateChatroomState extends State<CreateChatroomScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<CreateChatroomBloc>(
       bloc: _bloc,
-      child: CreateChatroomWidget(widget: widget),
+      child: CreateChatroomWidget(widget: widget, widgetState: this),
     );
   }
 
@@ -35,10 +35,10 @@ class _CreateChatroomState extends State<CreateChatroomScreen> {
 }
 
 class CreateChatroomWidget extends StatelessWidget {
-  const CreateChatroomWidget({Key key, @required this.widget})
-      : super(key: key);
+  const CreateChatroomWidget({Key key, @required this.widget, @required this.widgetState}) : super(key: key);
 
   final CreateChatroomScreen widget;
+  final _CreateChatroomState widgetState;
 
   @override
   Widget build(BuildContext context) {
@@ -55,24 +55,13 @@ class CreateChatroomWidget extends StatelessWidget {
                     strokeWidth: 4.0,
                   ),
                 );
-              } else if (state.action != null) {
-                Future.delayed(Duration.zero, () {
-                  NavigationHelper.navigateToInstantMessaging(context, state.action.chatroom.displayName, state.action.chatroom.id);
-                  BlocProvider.of<CreateChatroomBloc>(context).resetState();
-                });
-                return Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4.0,
-                  ),
-                );
               }
               return ListView.builder(
                 itemBuilder: (context, index) {
                   return InkWell(
                       child: _buildItem(state.users[index]),
                       onTap: () {
-                        BlocProvider.of<CreateChatroomBloc>(context)
-                            .startChat(state.users[index]);
+                        BlocProvider.of<CreateChatroomBloc>(context).startChat(state.users[index], this);
                       }
                   );
                 },
@@ -84,5 +73,9 @@ class CreateChatroomWidget extends StatelessWidget {
 
   Widget _buildItem(User user) {
     return UserItem(user: user);
+  }
+
+  void navigateToSelectedChatroom(SelectedChatroom chatroom) {
+    NavigationHelper.navigateToInstantMessaging(widgetState.context, chatroom.displayName, chatroom.id);
   }
 }

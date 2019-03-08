@@ -25,12 +25,4 @@ class CreateChatroomState {
   factory CreateChatroomState.users(
           List<User> users, CreateChatroomState state) =>
       CreateChatroomState._internal(users, state.isLoading);
-
-  factory CreateChatroomState.cancel(CreateChatroomState state) =>
-      CreateChatroomState._internal(state.users, state.isLoading,
-          action: CreateChatroomAction(null, true));
-
-  factory CreateChatroomState.selected(SelectedChatroom chatroom, CreateChatroomState state) =>
-      CreateChatroomState._internal(state.users, false,
-          action: CreateChatroomAction(chatroom, false));
 }

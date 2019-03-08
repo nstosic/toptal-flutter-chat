@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 
 import 'instant_messaging_event.dart';
 import 'instant_messaging_state.dart';
 import '../model/user.dart';
 import '../model/message.dart';
+import '../model/chatroom.dart';
 import '../model/chat_repo.dart';
 import '../model/user_repo.dart';
 
@@ -11,10 +13,11 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
   InstantMessagingBloc(this.chatroomId);
 
   final String chatroomId;
+  StreamSubscription<Chatroom> chatroomSubscription;
 
   void _retrieveMessagesForThisChatroom() async {
     final User user = await UserRepo.getInstance().getCurrentUser();
-    ChatRepo.getInstance().getMessagesForChatroom(chatroomId).listen((chatroom) {
+    chatroomSubscription = ChatRepo.getInstance().getMessagesForChatroom(chatroomId).listen((chatroom) {
       if (chatroom != null) {
         List<Message> processedMessages = chatroom.messages
             .map((message) => Message(
@@ -47,5 +50,13 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
     } else if (event is MessageSendErrorEvent) {
       yield InstantMessagingState.error(currentState);
     }
+  }
+
+  @override
+  void dispose() {
+    if (chatroomSubscription != null) {
+      chatroomSubscription.cancel();
+    }
+    super.dispose();
   }
 }

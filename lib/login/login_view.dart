@@ -20,7 +20,7 @@ class _LoginState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<LoginBloc>(
       bloc: _bloc,
-      child: LoginWidget(widget: widget)
+      child: LoginWidget(widget: widget, widgetState: this)
     );
   }
 
@@ -32,9 +32,10 @@ class _LoginState extends State<LoginScreen> {
 }
 
 class LoginWidget extends StatelessWidget {
-  const LoginWidget({Key key, @required this.widget}) : super(key: key);
+  const LoginWidget({Key key, @required this.widget, @required this.widgetState}) : super(key: key);
 
   final LoginScreen widget;
+  final _LoginState widgetState;
 
   @override
   Widget build(BuildContext context) {
@@ -45,19 +46,10 @@ class LoginWidget extends StatelessWidget {
       body: BlocBuilder(
           bloc: BlocProvider.of<LoginBloc>(context),
           builder: (context, LoginState state) {
-            if (state.loggedIn) {
-              _segueToMain(context);
-              return Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 4.0,
-                )
-              );
-            }
             if (state.loading) {
               return Center(
-                  child: CircularProgressIndicator(
-                strokeWidth: 4.0,
-              ));
+                  child: CircularProgressIndicator(strokeWidth: 4.0)
+              );
             } else {
               return Center(
                 child: Column(
@@ -68,8 +60,7 @@ class LoginWidget extends StatelessWidget {
                       minWidth: 256.0,
                       height: 32.0,
                       child: RaisedButton(
-                        onPressed: () =>
-                            BlocProvider.of<LoginBloc>(context).onLoginGoogle(),
+                        onPressed: () => BlocProvider.of<LoginBloc>(context).onLoginGoogle(this),
                         child: Text(
                           "Login with Google",
                           style: TextStyle(color: Colors.white),
@@ -81,8 +72,7 @@ class LoginWidget extends StatelessWidget {
                       minWidth: 256.0,
                       height: 32.0,
                       child: RaisedButton(
-                        onPressed: () => BlocProvider.of<LoginBloc>(context)
-                            .onLoginFacebook(),
+                        onPressed: () => BlocProvider.of<LoginBloc>(context).onLoginFacebook(this),
                         child: Text(
                           "Login with Facebook",
                           style: TextStyle(color: Colors.white),
@@ -98,8 +88,9 @@ class LoginWidget extends StatelessWidget {
     );
   }
 
-  void _segueToMain(BuildContext context) async {
-      await Future.delayed(const Duration(milliseconds: 100));
-      NavigationHelper.navigateToMain(context);
+
+
+  void navigateToMain() {
+      NavigationHelper.navigateToMain(widgetState.context);
   }
 }

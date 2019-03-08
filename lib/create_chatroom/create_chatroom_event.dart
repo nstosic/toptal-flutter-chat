@@ -11,10 +11,4 @@ class ChatroomUserListUpdatedEvent extends CreateChatroomEvent {
 
 class CreateChatroomRequestedEvent extends CreateChatroomEvent {}
 
-class ChatroomSelectedEvent extends CreateChatroomEvent {
-  ChatroomSelectedEvent(this.chatroom);
-
-  final SelectedChatroom chatroom;
-}
-
 class CancelCreateChatroomEvent extends CreateChatroomEvent {}

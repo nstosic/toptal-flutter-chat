@@ -22,7 +22,7 @@ class _MainState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<MainBloc>(
       bloc: _bloc,
-      child: MainWidget(widget: widget),
+      child: MainWidget(widget: widget, widgetState: this),
     );
   }
 
@@ -34,9 +34,10 @@ class _MainState extends State<MainScreen> {
 }
 
 class MainWidget extends StatelessWidget {
-  const MainWidget({Key key, @required this.widget}) : super(key: key);
+  const MainWidget({Key key, @required this.widget, @required this.widgetState}) : super(key: key);
 
   final MainScreen widget;
+  final _MainState widgetState;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ class MainWidget extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.lock_open),
             onPressed: () {
-              BlocProvider.of<MainBloc>(context).logout();
+              BlocProvider.of<MainBloc>(context).logout(this);
             },
           )
         ],
@@ -56,28 +57,7 @@ class MainWidget extends StatelessWidget {
           bloc: BlocProvider.of<MainBloc>(context),
           builder: (context, MainState state) {
             Widget content;
-            if (!state.loggedIn) {
-              Future.delayed(Duration.zero, () => NavigationHelper.navigateToLogin(context));
-              return Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 4.0,
-                ),
-              );
-            } else if (state.selected != null) {
-              Future.delayed(Duration.zero, () {
-                NavigationHelper.navigateToInstantMessaging(
-                    context,
-                    state.selected.displayName,
-                    state.selected.id,
-                    addToBackStack: true);
-                BlocProvider.of<MainBloc>(context).resetState();
-              });
-              content = Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4.0,
-                  )
-              );
-            } else if (state.isLoading) {
+            if (state.isLoading) {
               content = Center(
                 child: CircularProgressIndicator(
                   strokeWidth: 4.0,
@@ -97,11 +77,9 @@ class MainWidget extends StatelessWidget {
                   return InkWell(
                       child: _buildItem(state.chatrooms[index]),
                       onTap: () {
-                        BlocProvider.of<MainBloc>(context)
-                            .retrieveChatroomForParticipant(
-                            state.chatrooms[index].participants[0]);
-                      }
-                  );
+                        BlocProvider.of<MainBloc>(context).retrieveChatroomForParticipant(
+                            state.chatrooms[index].participants.first, this);
+                      });
                 },
                 itemCount: state.chatrooms.length,
               );
@@ -119,9 +97,7 @@ class MainWidget extends StatelessWidget {
           alignment: Alignment.bottomRight,
           padding: EdgeInsets.all(UIConstants.STANDARD_PADDING),
           child: FloatingActionButton(
-              onPressed: () {
-                _clickAddChat(context);
-              },
+              onPressed: _clickAddChat,
               child: Icon(Icons.add, color: Colors.white),
               backgroundColor: Colors.blueAccent,
               elevation: UIConstants.STANDARD_ELEVATION),
@@ -130,11 +106,19 @@ class MainWidget extends StatelessWidget {
     );
   }
 
-  void _clickAddChat(BuildContext context) {
-    NavigationHelper.navigateToAddChat(context, addToBackStack: true);
+  void _clickAddChat() {
+    NavigationHelper.navigateToAddChat(widgetState.context, addToBackStack: true);
   }
 
   UserItem _buildItem(Chatroom chatroom) {
-    return UserItem(user: chatroom.participants[0]);
+    return UserItem(user: chatroom.participants.first);
+  }
+
+  void navigateToLogin() {
+    NavigationHelper.navigateToLogin(widgetState.context);
+  }
+
+  void navigateToChatroom(SelectedChatroom chatroom) {
+    NavigationHelper.navigateToInstantMessaging(widgetState.context, chatroom.displayName, chatroom.id, addToBackStack: true);
   }
 }
