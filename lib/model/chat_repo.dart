@@ -71,14 +71,14 @@ class ChatRepo {
   Future<SelectedChatroom> startChatroomForUsers(List<User> users) async {
     DocumentReference userRef = _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
-        .document(users[0].uid);
+        .document(users[1].uid);
     QuerySnapshot queryResults = await _firestore
         .collection(FirestorePaths.CHATROOMS_COLLECTION)
         .where("participants", arrayContains: userRef)
         .getDocuments();
     DocumentReference otherUserRef = _firestore
         .collection(FirestorePaths.USERS_COLLECTION)
-        .document(users[1].uid);
+        .document(users[0].uid);
     DocumentSnapshot roomSnapshot = queryResults.documents.firstWhere((room) {
       return room.data["participants"].contains(otherUserRef);
     }, orElse: () => null);
@@ -88,8 +88,8 @@ class ChatRepo {
       Map<String, dynamic> chatroomMap = Map<String, dynamic>();
       chatroomMap["messages"] = List<String>(0);
       List<DocumentReference> participants = List<DocumentReference>(2);
-      participants[0] = userRef;
-      participants[1] = otherUserRef;
+      participants[0] = otherUserRef;
+      participants[1] = userRef;
       chatroomMap["participants"] = participants;
       DocumentReference reference = await _firestore
           .collection(FirestorePaths.CHATROOMS_COLLECTION)

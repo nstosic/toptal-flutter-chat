@@ -22,11 +22,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           UserRepo.getInstance().setCurrentUser(User.fromFirebaseUser(user));
           if (loginProvider == "google") {
             // TODO analytics call for google login provider
-            view.navigateToMain();
           } else {
             // TODO analytics call for facebook login provider
-            view.navigateToMain();
           }
+          view.navigateToMain();
         } else {
           dispatch(LogoutEvent());
         }
