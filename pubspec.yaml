@@ -22,9 +22,10 @@ dependencies:
 
   flutter_bloc:
   firebase_auth:
+  firebase_messaging:
+  cloud_firestore:
   google_sign_in:
   flutter_facebook_login:
-  cloud_firestore:
   shared_preferences:
 
 dev_dependencies:
