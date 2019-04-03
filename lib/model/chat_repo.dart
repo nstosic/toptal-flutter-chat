@@ -14,8 +14,7 @@ class ChatRepo {
 
   final Firestore _firestore;
 
-  final _chatUsersSubject =
-      BehaviorSubject<List<User>>(seedValue: List<User>(0));
+  final _chatUsersSubject = BehaviorSubject<List<User>>();
 
   ChatRepo._internal(this._firestore);
 

@@ -1,3 +1,5 @@
+[![Codemagic build status](https://api.codemagic.io/apps/5c9fc907581a2d000dec7fda/5c9fc907581a2d000dec7fd9/status_badge.svg)](https://codemagic.io/apps/5c9fc907581a2d000dec7fda/5c9fc907581a2d000dec7fd9/latest_build)
+
 # Toptal Flutter Chat
 
 Cross-platform demo chat client developed using Flutter & Firebase for Toptal Engineering Blog article.

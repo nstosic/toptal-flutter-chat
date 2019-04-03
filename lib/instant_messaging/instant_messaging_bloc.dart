@@ -43,8 +43,7 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
   }
 
   @override
-  Stream<InstantMessagingState> mapEventToState(
-      InstantMessagingState currentState, InstantMessagingEvent event) async* {
+  Stream<InstantMessagingState> mapEventToState(InstantMessagingEvent event) async* {
     if (event is MessageReceivedEvent) {
       yield InstantMessagingState.messages(event.messages);
     } else if (event is MessageSendErrorEvent) {

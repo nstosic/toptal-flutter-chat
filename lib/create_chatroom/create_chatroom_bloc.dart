@@ -48,10 +48,7 @@ class CreateChatroomBloc
   }
 
   @override
-  Stream<CreateChatroomState> mapEventToState(
-    CreateChatroomState currentState,
-    CreateChatroomEvent event,
-  ) async* {
+  Stream<CreateChatroomState> mapEventToState(CreateChatroomEvent event) async* {
     if (event is ChatroomUserListUpdatedEvent) {
       yield CreateChatroomState.isLoading(false, CreateChatroomState.users(event.users, currentState));
     } else if (event is CreateChatroomRequestedEvent) {
