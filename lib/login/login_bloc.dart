@@ -73,8 +73,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginState get initialState => LoginState.initial();
 
   @override
-  Stream<LoginState> mapEventToState(
-      LoginState currentState, LoginEvent event) async* {
+  Stream<LoginState> mapEventToState(LoginEvent event) async* {
     if (event is LoginWithGoogleEvent) {
       yield LoginState.loading(false);
     } else if (event is LoginWithFacebookEvent) {

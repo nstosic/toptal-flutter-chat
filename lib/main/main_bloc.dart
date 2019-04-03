@@ -56,9 +56,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   @override
-  Stream<MainState> mapEventToState(
-      MainState currentState,
-      MainEvent event) async* {
+  Stream<MainState> mapEventToState(MainEvent event) async* {
     if (event is ClearChatroomsEvent) {
       yield MainState.isLoading(true, MainState.initial());
     } else if (event is ChatroomsUpdatedEvent) {
