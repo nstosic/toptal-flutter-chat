@@ -146,8 +146,10 @@ class InstantMessagingWidget extends StatelessWidget {
   }
 
   void _send(BuildContext context, String text) {
-    BlocProvider.of<InstantMessagingBloc>(context).send(text);
-    widget._textEditingController.text = "";
+    if (text.isNotEmpty) {
+      BlocProvider.of<InstantMessagingBloc>(context).send(text);
+      widget._textEditingController.text = "";
+    }
   }
 }
 

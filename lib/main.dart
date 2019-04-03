@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:toptal_chat/push_notifications/push_notifications_handler.dart';
 
 import 'login/login_view.dart';
 import 'model/chat_repo.dart';
+import 'push_notifications/push_notifications_handler.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+  PushNotificationsHandler pushNotificationsHandler = PushNotificationsHandler();
+  pushNotificationsHandler.setup();
+}
 
 class MyApp extends StatefulWidget {
 

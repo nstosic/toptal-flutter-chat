@@ -9,6 +9,7 @@ import '../util/constants.dart';
 import 'login_response.dart';
 import 'user.dart';
 import 'firebase_repo.dart';
+import 'user_repo.dart';
 
 class LoginRepo {
   static LoginRepo _instance;
@@ -27,11 +28,13 @@ class LoginRepo {
   Future<LoginResponse> _signIn(AuthCredential credentials) async {
     final user = await _auth.signInWithCredential(credentials);
     if (user != null) {
+      final token = await UserRepo.getInstance().getFCMToken();
+      User serializedUser = User(user.uid, user.displayName, user.photoUrl, token);
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
-      .document(user.uid)
-      .setData(User.fromFirebaseUser(user).map, merge: true);
-      return User(user.uid, user.displayName, user.photoUrl);
+          .document(user.uid)
+          .setData(serializedUser.map, merge: true);
+      return User(user.uid, user.displayName, user.photoUrl, token);
     } else {
       return LoginFailedResponse(ErrorMessages.NO_USER_FOUND);
     }

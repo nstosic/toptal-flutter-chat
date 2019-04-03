@@ -15,7 +15,7 @@ class Deserializer {
   }
 
   static User deserializeUser(DocumentSnapshot document) {
-    return User(document['uid'], document['displayName'], document['photoUrl']);
+    return User(document['uid'], document['displayName'], document['photoUrl'], document['fcmToken']);
   }
 
   static List<Chatroom> deserializeChatrooms(List<DocumentSnapshot> chatrooms, List<User> users) {
