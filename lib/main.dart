@@ -5,11 +5,7 @@ import 'login/login_view.dart';
 import 'model/chat_repo.dart';
 import 'push_notifications/push_notifications_handler.dart';
 
-void main() {
-  runApp(MyApp());
-  PushNotificationsHandler pushNotificationsHandler = PushNotificationsHandler();
-  pushNotificationsHandler.setup();
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
 
@@ -21,6 +17,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    PushNotificationsHandler pushNotificationsHandler = PushNotificationsHandler(context);
+    pushNotificationsHandler.setup();
     return MaterialApp(
       title: 'Toptal Chat',
       theme: ThemeData(

@@ -41,6 +41,25 @@ class ChatRepo {
     return _chatUsersSubject.stream;
   }
 
+  Future<SelectedChatroom> getChatroom(String chatroomId, User currentUser, User otherUser) async {
+    DocumentReference chatroomRef = _firestore.document(FirestorePaths.CHATROOMS_COLLECTION + "/" + chatroomId);
+    if (chatroomRef != null) {
+      List<User> users = List(2);
+      users[0] = otherUser;
+      users[1] = currentUser;
+      DocumentSnapshot chatroomData = await chatroomRef.get();
+      try {
+        return SelectedChatroom(chatroomId, otherUser.displayName);
+      } catch (error) {
+        print(error);
+        return null;
+      }
+    }
+    else {
+      return null;
+    }
+  }
+
   Stream<List<Chatroom>> getChatroomsForUser(User user) {
     DocumentReference userRef =
         _firestore.document(FirestorePaths.USERS_COLLECTION + "/" + user.uid);
