@@ -14,10 +14,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final key = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    PushNotificationsHandler pushNotificationsHandler = PushNotificationsHandler(context);
+    PushNotificationsHandler pushNotificationsHandler = PushNotificationsHandler(key);
     pushNotificationsHandler.setup();
     return MaterialApp(
       title: 'Toptal Chat',
@@ -25,6 +26,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       home: LoginScreen(),
+      navigatorKey: key
     );
   }
 

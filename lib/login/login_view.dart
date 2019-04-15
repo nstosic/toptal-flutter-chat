@@ -39,6 +39,7 @@ class LoginWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<LoginBloc>(context).setupAuthStateListener(this);
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
