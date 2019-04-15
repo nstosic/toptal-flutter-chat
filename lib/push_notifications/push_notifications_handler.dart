@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import '../model/user_repo.dart';
 import '../model/chat_repo.dart';
 import '../model/user.dart';
-import '../navigation_helper.dart';
+import '../instant_messaging/instant_messaging_view.dart';
 
 class PushNotificationsHandler {
-  BuildContext context;
-
-  PushNotificationsHandler(this.context);
+  final GlobalKey<NavigatorState> appStateKey;
+  PushNotificationsHandler(this.appStateKey);
 
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -45,16 +44,18 @@ class PushNotificationsHandler {
   }
 
   void _handleIncomingNotification(Map<String, dynamic> payload) async {
-    Map<String, dynamic> userMap = payload["other_member_id"];
-    User otherUser = User(userMap["uid"], userMap["displayName"], userMap["photoUrl"], userMap["fcmToken"]);
+    Map<dynamic, dynamic> data = payload["data"];
+    User otherUser = User(data["other_member_id"], data["other_member_name"], data["other_member_photo_url"], "");
     User currentUser = await UserRepo.getInstance().getCurrentUser();
     if (currentUser == null) {
       return;
     }
     ChatRepo.getInstance()
-        .getChatroom(payload["tag"], currentUser, otherUser)
+        .getChatroom(data["chatroom_id"], currentUser, otherUser)
         .then((chatroom) {
-          NavigationHelper.navigateToInstantMessaging(context, otherUser.displayName, chatroom.id);
+          appStateKey.currentState.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => InstantMessagingScreen(displayName: chatroom.displayName, chatroomId: chatroom.id)),
+              (Route<dynamic> route) => route.isFirst);
         });
   }
 }

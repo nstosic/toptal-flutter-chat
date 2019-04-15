@@ -14,7 +14,7 @@ import '../model/user.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   StreamSubscription<FirebaseUser> _authStateListener;
 
-  void _setupAuthStateListener(LoginWidget view) {
+  void setupAuthStateListener(LoginWidget view) {
     if (_authStateListener == null) {
       _authStateListener = FirebaseAuth.instance.onAuthStateChanged.listen((user) {
         if (user != null) {
@@ -36,7 +36,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void onLoginGoogle(LoginWidget view) async {
-    _setupAuthStateListener(view);
     dispatch(LoginEventInProgress());
     final googleSignInRepo = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"]);
     final account = await googleSignInRepo.signIn();
@@ -48,7 +47,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void onLoginFacebook(LoginWidget view) async {
-    _setupAuthStateListener(view);
     dispatch(LoginEventInProgress());
     final facebookSignInRepo = FacebookLogin();
     final signInResult = await facebookSignInRepo.logInWithReadPermissions(["email"]);
