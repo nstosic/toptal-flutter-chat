@@ -26,9 +26,6 @@ dependencies:
   cloud_firestore:
   google_sign_in:
   flutter_facebook_login:
-    git:
-      url: https://github.com/kentcb/flutter_facebook_login.git
-      ref: fixes
   shared_preferences:
 
 dev_dependencies:

@@ -16,21 +16,15 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainState extends State<MainScreen> {
-  final _bloc = MainBloc();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<MainBloc>(
-      bloc: _bloc,
-      child: MainWidget(widget: widget, widgetState: this),
+      builder: (context) => MainBloc(),
+      child: MainWidget(widget: widget, widgetState: this)
     );
   }
 
-  @override
-  void dispose() {
-    _bloc.dispose();
-    super.dispose();
-  }
 }
 
 class MainWidget extends StatelessWidget {
