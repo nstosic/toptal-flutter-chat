@@ -17,21 +17,15 @@ class CreateChatroomScreen extends StatefulWidget {
 }
 
 class _CreateChatroomState extends State<CreateChatroomScreen> {
-  final _bloc = CreateChatroomBloc();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CreateChatroomBloc>(
-      bloc: _bloc,
-      child: CreateChatroomWidget(widget: widget, widgetState: this),
+      builder: (context) => CreateChatroomBloc(),
+      child: CreateChatroomWidget(widget: widget, widgetState: this)
     );
   }
 
-  @override
-  void dispose() {
-    _bloc.dispose();
-    super.dispose();
-  }
 }
 
 class CreateChatroomWidget extends StatelessWidget {

@@ -19,25 +19,18 @@ class InstantMessagingScreen extends StatefulWidget {
 }
 
 class _InstantMessagingState extends State<InstantMessagingScreen> {
-  _InstantMessagingState._(this._bloc);
+  final String chatroomId;
 
-  _InstantMessagingState(String chatroomId) : this._(InstantMessagingBloc(chatroomId));
-
-  final InstantMessagingBloc _bloc;
+  _InstantMessagingState(this.chatroomId);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<InstantMessagingBloc>(
-      bloc: _bloc,
+      builder: (context) => InstantMessagingBloc(chatroomId),
       child: InstantMessagingWidget(widget: widget),
     );
   }
 
-  @override
-  void dispose() {
-    _bloc.dispose();
-    super.dispose();
-  }
 }
 
 class InstantMessagingWidget extends StatelessWidget {

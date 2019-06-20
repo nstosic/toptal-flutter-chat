@@ -14,21 +14,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginScreen> {
-  final _bloc = LoginBloc();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<LoginBloc>(
-      bloc: _bloc,
+      builder: (context) => LoginBloc(),
       child: LoginWidget(widget: widget, widgetState: this)
     );
   }
 
-  @override
-  void dispose() {
-    _bloc.dispose();
-    super.dispose();
-  }
 }
 
 class LoginWidget extends StatelessWidget {
