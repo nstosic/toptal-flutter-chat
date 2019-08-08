@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../util/constants.dart';
 import '../model/message.dart';
@@ -75,6 +78,14 @@ class InstantMessagingWidget extends StatelessWidget {
                     ),
                     Container(
                       child: IconButton(
+                          icon: Icon(Icons.image),
+                          onPressed: () {
+                            _openPictureDialog(context);
+                          }),
+                      decoration: BoxDecoration(shape: BoxShape.circle),
+                    ),
+                    Container(
+                      child: IconButton(
                           icon: Icon(Icons.send),
                           onPressed: () {
                             _send(context, widget._textEditingController.text);
@@ -106,6 +117,34 @@ class InstantMessagingWidget extends StatelessWidget {
   }
 
   Widget _buildMessageItem(Message message) {
+    if (message.value.startsWith("_uri:")) {
+      final String url = message.value.substring("_uri:".length);
+      if (message.outgoing) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0)
+              ),
+              child: Image.network(url, width: 256),
+            ),
+          ],
+        );
+      } else {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0)
+              ),
+              child: Image.network(url, width: 256),
+            ),
+          ],
+        );
+      }
+    }
     if (message.outgoing) {
       return Container(
         child: Text(
@@ -142,6 +181,17 @@ class InstantMessagingWidget extends StatelessWidget {
     if (text.isNotEmpty) {
       BlocProvider.of<InstantMessagingBloc>(context).send(text);
       widget._textEditingController.text = "";
+    }
+  }
+
+  void _sendFile(BuildContext context, File file) {
+    BlocProvider.of<InstantMessagingBloc>(context).sendFile(file);
+  }
+
+  void _openPictureDialog(BuildContext context) async {
+    File target = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (target != null) {
+      _sendFile(context, target);
     }
   }
 }

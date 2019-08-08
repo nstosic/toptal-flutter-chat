@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 
 import 'instant_messaging_event.dart';
@@ -8,6 +9,7 @@ import '../model/message.dart';
 import '../model/chatroom.dart';
 import '../model/chat_repo.dart';
 import '../model/user_repo.dart';
+import '../model/storage_repo.dart';
 
 class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingState> {
   InstantMessagingBloc(this.chatroomId);
@@ -34,6 +36,19 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
     if (!success) {
       dispatch(MessageSendErrorEvent());
     }
+  }
+
+  void sendFile(File file) async {
+    final Uri uri = await StorageRepo.getInstance().uploadFile(file);
+    if (uri != null) {
+      _sendFileUri(uri);
+    } else {
+      dispatch(MessageSendErrorEvent());
+    }
+  }
+
+  void _sendFileUri(Uri uri) async {
+    send("_uri:${uri.toString()}");
   }
 
   @override

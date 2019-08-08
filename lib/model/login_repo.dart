@@ -26,8 +26,9 @@ class LoginRepo {
   }
 
   Future<LoginResponse> _signIn(AuthCredential credentials) async {
-    final user = await _auth.signInWithCredential(credentials);
-    if (user != null) {
+    final authResult = await _auth.signInWithCredential(credentials);
+    if (authResult != null && authResult.user != null) {
+      final user = authResult.user;
       final token = await UserRepo.getInstance().getFCMToken();
       User serializedUser = User(user.uid, user.displayName, user.photoUrl, token);
       await _firestore
