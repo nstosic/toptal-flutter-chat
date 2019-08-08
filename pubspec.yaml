@@ -24,9 +24,11 @@ dependencies:
   firebase_auth:
   firebase_messaging:
   cloud_firestore:
+  firebase_storage:
   google_sign_in:
   flutter_facebook_login:
   shared_preferences:
+  image_picker:
 
 dev_dependencies:
   test: ^1.5.3
