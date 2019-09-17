@@ -24,12 +24,13 @@ class PushNotificationsHandler {
       onMessage: (Map<String, dynamic> message) {
         print("Incoming notification message:");
         print(message);
+        return Future.microtask(() => true);
       },
       onResume: (Map<String, dynamic> message) {
-        _handleIncomingNotification(message);
+        return _handleIncomingNotification(message);
       },
       onLaunch: (Map<String, dynamic> message) {
-        _handleIncomingNotification(message);
+        return _handleIncomingNotification(message);
       }
     );
   }
@@ -43,12 +44,12 @@ class PushNotificationsHandler {
     });
   }
 
-  void _handleIncomingNotification(Map<String, dynamic> payload) async {
+  Future<bool> _handleIncomingNotification(Map<String, dynamic> payload) async {
     Map<dynamic, dynamic> data = payload["data"];
     User otherUser = User(data["other_member_id"], data["other_member_name"], data["other_member_photo_url"], "");
     User currentUser = await UserRepo.getInstance().getCurrentUser();
     if (currentUser == null) {
-      return;
+      return false;
     }
     ChatRepo.getInstance()
         .getChatroom(data["chatroom_id"], currentUser, otherUser)
@@ -56,6 +57,7 @@ class PushNotificationsHandler {
           appStateKey.currentState.pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => InstantMessagingScreen(displayName: chatroom.displayName, chatroomId: chatroom.id)),
               (Route<dynamic> route) => route.isFirst);
+          return true;
         });
   }
 }
