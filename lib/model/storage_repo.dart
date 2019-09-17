@@ -16,12 +16,22 @@ class StorageRepo {
     return _instance;
   }
 
-  Future<Uri> uploadFile(File file) async {
-    final StorageUploadTask uploadTask = _firebaseStorage.ref().putFile(file);
+  Future<String> uploadFile(File file) async {
+    final StorageUploadTask uploadTask = _firebaseStorage.ref()
+        .child(file.uri.pathSegments.last)
+        .putFile(file);
     StorageTaskSnapshot result = await uploadTask.onComplete;
     if (result.error == 0) {
       return null;
     }
-    return result.uploadSessionUri;
+    return result.storageMetadata.path;
+  }
+
+  Future<String> decodeUri(String uri) async {
+    return _firebaseStorage
+        .ref()
+        .child(uri)
+        .getDownloadURL()
+        .then((result) => result.toString());
   }
 }
