@@ -19,12 +19,18 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
 
   void _retrieveMessagesForThisChatroom() async {
     final User user = await UserRepo.getInstance().getCurrentUser();
-    chatroomSubscription = ChatRepo.getInstance().getMessagesForChatroom(chatroomId).listen((chatroom) {
+    chatroomSubscription = ChatRepo.getInstance().getMessagesForChatroom(chatroomId).listen((chatroom) async {
       if (chatroom != null) {
-        List<Message> processedMessages = chatroom.messages
-            .map((message) => Message(
-                message.author, message.timestamp, message.value, message.author.uid == user.uid))
-            .toList();
+        Stream<Message> processedMessagesStream = Stream.fromIterable(chatroom.messages)
+            .asyncMap((message) async {
+              if (message.value.startsWith("_uri:")) {
+                final String uri = message.value.substring("_uri:".length);
+                final String downloadUri = await StorageRepo.getInstance().decodeUri(uri);
+                return Message(message.author, message.timestamp, "_uri:$downloadUri", message.author.uid == user.uid);
+              }
+              return Message(message.author, message.timestamp, message.value, message.author.uid == user.uid);
+            });
+        final List<Message> processedMessages = await processedMessagesStream.toList();
         dispatch(MessageReceivedEvent(processedMessages));
       }
     });
@@ -39,16 +45,16 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
   }
 
   void sendFile(File file) async {
-    final Uri uri = await StorageRepo.getInstance().uploadFile(file);
-    if (uri != null) {
-      _sendFileUri(uri);
+    final String storagePath = await StorageRepo.getInstance().uploadFile(file);
+    if (storagePath != null) {
+      _sendFileUri(storagePath);
     } else {
       dispatch(MessageSendErrorEvent());
     }
   }
 
-  void _sendFileUri(Uri uri) async {
-    send("_uri:${uri.toString()}");
+  void _sendFileUri(String uri) async {
+    send("_uri:$uri");
   }
 
   @override

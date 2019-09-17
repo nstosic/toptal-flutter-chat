@@ -67,6 +67,7 @@ class InstantMessagingWidget extends StatelessWidget {
                             vertical: UIConstants.SMALLER_PADDING,
                             horizontal: UIConstants.SMALLER_PADDING),
                         child: TextField(
+                          maxLines: null,
                           controller: widget._textEditingController,
                           focusNode: FocusNode(),
                           style: TextStyle(color: Colors.black),
