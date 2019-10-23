@@ -49,7 +49,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   void onLoginFacebook(LoginWidget view) async {
     dispatch(LoginEventInProgress());
     final facebookSignInRepo = FacebookLogin();
-    final signInResult = await facebookSignInRepo.logInWithReadPermissions(["email"]);
+    final signInResult = await facebookSignInRepo.logIn(["email"]);
     if (signInResult.status == FacebookLoginStatus.loggedIn) {
       LoginRepo.getInstance().signInWithFacebook(signInResult);
     } else if (signInResult.status == FacebookLoginStatus.cancelledByUser) {
