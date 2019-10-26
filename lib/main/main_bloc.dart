@@ -29,7 +29,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   void retrieveUserChatrooms() async {
-    dispatch(ClearChatroomsEvent());
+    add(ClearChatroomsEvent());
     final user = await UserRepo.getInstance().getCurrentUser();
     if (user != null) {
       chatroomsSubscription = ChatRepo.getInstance().getChatroomsForUser(user).listen((chatrooms) {
@@ -38,10 +38,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
             Util.swapElementsInList(room.participants, 0, 1);
           }
         });
-        dispatch(ChatroomsUpdatedEvent(chatrooms));
+        add(ChatroomsUpdatedEvent(chatrooms));
       });
     } else {
-      dispatch(MainErrorEvent());
+      add(MainErrorEvent());
     }
   }
 
@@ -60,17 +60,17 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     if (event is ClearChatroomsEvent) {
       yield MainState.isLoading(true, MainState.initial());
     } else if (event is ChatroomsUpdatedEvent) {
-      yield MainState.isLoading(false, MainState.chatrooms(event.chatrooms, currentState));
+      yield MainState.isLoading(false, MainState.chatrooms(event.chatrooms, state));
     } else if (event is MainErrorEvent) {
-      yield MainState.isLoading(false, currentState);
+      yield MainState.isLoading(false, state);
     }
   }
 
   @override
-  void dispose() {
+  void close() {
     if (chatroomsSubscription != null) {
       chatroomsSubscription.cancel();
     }
-    super.dispose();
+    super.close();
   }
 }
