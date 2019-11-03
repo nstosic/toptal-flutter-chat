@@ -1,4 +1,4 @@
-package com.toptal.toptalchat
+package rs.co.estel.chat
 
 import android.os.Bundle
 
