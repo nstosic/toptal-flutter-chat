@@ -27,43 +27,43 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           }
           view.navigateToMain();
         } else {
-          dispatch(LogoutEvent());
+          add(LogoutEvent());
         }
       }, onError: (error) {
-        dispatch(LoginErrorEvent(error));
+        add(LoginErrorEvent(error));
       });
     }
   }
 
   void onLoginGoogle(LoginWidget view) async {
-    dispatch(LoginEventInProgress());
+    add(LoginEventInProgress());
     final googleSignInRepo = GoogleSignIn(signInOption: SignInOption.standard, scopes: ["profile", "email"]);
     final account = await googleSignInRepo.signIn();
     if (account != null) {
       LoginRepo.getInstance().signInWithGoogle(account);
     } else {
-      dispatch(LogoutEvent());
+      add(LogoutEvent());
     }
   }
 
   void onLoginFacebook(LoginWidget view) async {
-    dispatch(LoginEventInProgress());
+    add(LoginEventInProgress());
     final facebookSignInRepo = FacebookLogin();
-    final signInResult = await facebookSignInRepo.logInWithReadPermissions(["email"]);
+    final signInResult = await facebookSignInRepo.logIn(["email"]);
     if (signInResult.status == FacebookLoginStatus.loggedIn) {
       LoginRepo.getInstance().signInWithFacebook(signInResult);
     } else if (signInResult.status == FacebookLoginStatus.cancelledByUser) {
-      dispatch(LogoutEvent());
+      add(LogoutEvent());
     } else {
-      dispatch(LoginErrorEvent(signInResult.errorMessage));
+      add(LoginErrorEvent(signInResult.errorMessage));
     }
   }
 
   void onLogout() async {
-    dispatch(LoginEventInProgress());
+    add(LoginEventInProgress());
     bool result = await LoginRepo.getInstance().signOut();
     if (result) {
-      dispatch(LogoutEvent());
+      add(LogoutEvent());
     }
   }
 
@@ -86,8 +86,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   @override
-  void dispose() {
+  void close() {
     _authStateListener.cancel();
-    super.dispose();
+    super.close();
   }
 }

@@ -1,5 +1,4 @@
 import '../model/message.dart';
-import '../model/user.dart';
 
 class InstantMessagingState {
   final bool isLoading;

@@ -47,7 +47,6 @@ class ChatRepo {
       List<User> users = List(2);
       users[0] = otherUser;
       users[1] = currentUser;
-      DocumentSnapshot chatroomData = await chatroomRef.get();
       try {
         return SelectedChatroom(chatroomId, otherUser.displayName);
       } catch (error) {

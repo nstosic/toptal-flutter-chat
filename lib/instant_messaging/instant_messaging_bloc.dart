@@ -31,7 +31,7 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
               return Message(message.author, message.timestamp, message.value, message.author.uid == user.uid);
             });
         final List<Message> processedMessages = await processedMessagesStream.toList();
-        dispatch(MessageReceivedEvent(processedMessages));
+        add(MessageReceivedEvent(processedMessages));
       }
     });
   }
@@ -40,7 +40,7 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
     final User user = await UserRepo.getInstance().getCurrentUser();
     final bool success = await ChatRepo.getInstance().sendMessageToChatroom(chatroomId, user, text);
     if (!success) {
-      dispatch(MessageSendErrorEvent());
+      add(MessageSendErrorEvent());
     }
   }
 
@@ -49,7 +49,7 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
     if (storagePath != null) {
       _sendFileUri(storagePath);
     } else {
-      dispatch(MessageSendErrorEvent());
+      add(MessageSendErrorEvent());
     }
   }
 
@@ -68,15 +68,15 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
     if (event is MessageReceivedEvent) {
       yield InstantMessagingState.messages(event.messages);
     } else if (event is MessageSendErrorEvent) {
-      yield InstantMessagingState.error(currentState);
+      yield InstantMessagingState.error(state);
     }
   }
 
   @override
-  void dispose() {
+  void close() {
     if (chatroomSubscription != null) {
       chatroomSubscription.cancel();
     }
-    super.dispose();
+    super.close();
   }
 }

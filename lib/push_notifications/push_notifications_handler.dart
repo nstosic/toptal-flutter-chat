@@ -59,5 +59,6 @@ class PushNotificationsHandler {
               (Route<dynamic> route) => route.isFirst);
           return true;
         });
+    return false;
   }
 }
