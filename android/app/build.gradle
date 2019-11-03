@@ -25,6 +25,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
 android {
     compileSdkVersion 28
 
@@ -47,11 +55,25 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
+                storeFile file(System.getenv()["FCI_BUILD_DIR"] + "/keystore.jks")
+                storePassword System.getenv()["FCI_KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["FCI_KEY_ALIAS"]
+                keyPassword System.getenv()["FCI_KEY_PASSWORD"]
+            } else {
+                storeFile file(keystoreProperties["KEYSTORE_FILE"])
+                storePassword keystoreProperties["KEYSTORE_PASSWORD"]
+                keyAlias keystoreProperties["KEY_ALIAS"]
+                keyPassword keystoreProperties["KEY_PASSWORD"]
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }
