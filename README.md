@@ -11,3 +11,7 @@ This project is developed to work with `flutter channel stable`. There is no gua
 # API keys
 
 Note - if you clone this repository and try running the project, it'll fail because I've removed API keys for Facebook and Firebase. Refer to the [Facebook](https://developers.facebook.com/docs/facebook-login/) or [Firebase](https://firebase.google.com/docs/flutter/setup) official documentation for a step-by-step guide to setting up the project.
+
+# V2 refactor pending
+
+As there's an ongoing process of refactoring [FlutterFire](https://github.com/FirebaseExtended/flutterfire/issues/2582) libraries to offer better multi-platform support, I'll also be rewriting this repository to target the latest releases from FlutterFire (after the library refactoring effort is completed) and will add support for macOS and web platforms. I do not have a timeline for this yet, but it likely won't be completed before October.
