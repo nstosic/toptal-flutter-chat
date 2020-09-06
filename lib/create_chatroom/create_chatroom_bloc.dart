@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 
-import 'create_chatroom_event.dart';
-import 'create_chatroom_state.dart';
-import 'create_chatroom_view.dart';
-import '../model/chat_repo.dart';
-import '../model/user.dart';
-import '../model/user_repo.dart';
+import 'package:toptal_chat/create_chatroom/create_chatroom_event.dart';
+import 'package:toptal_chat/create_chatroom/create_chatroom_state.dart';
+import 'package:toptal_chat/model/chat_repo.dart';
+import 'package:toptal_chat/model/chatroom.dart';
+import 'package:toptal_chat/model/user.dart';
+import 'package:toptal_chat/model/user_repo.dart';
 
-class CreateChatroomBloc
-    extends Bloc<CreateChatroomEvent, CreateChatroomState> {
+class CreateChatroomBloc extends Bloc<CreateChatroomEvent, CreateChatroomState> {
   User currentUser;
   StreamSubscription<List<User>> chatUserSubscription;
+
+  CreateChatroomBloc(CreateChatroomState initialState) : super(initialState) {
+    _initialize();
+  }
 
   void dispatchCancelEvent() {
     add(CancelCreateChatroomEvent());
@@ -19,12 +22,6 @@ class CreateChatroomBloc
 
   void resetState() {
     dispatchCancelEvent();
-  }
-
-  @override
-  CreateChatroomState get initialState {
-    _initialize();
-    return CreateChatroomState.initial();
   }
 
   void _initialize() async {
@@ -35,7 +32,7 @@ class CreateChatroomBloc
     });
   }
 
-  void startChat(User user, CreateChatroomWidget view) {
+  void startChat(User user, Function(SelectedChatroom chatroomId) onChatroomIdProcessed) {
     add(CreateChatroomRequestedEvent());
     assert(currentUser != null);
     assert(currentUser != user);
@@ -43,7 +40,7 @@ class CreateChatroomBloc
     chatroomUsers[0] = user;
     chatroomUsers[1] = currentUser;
     ChatRepo.getInstance().startChatroomForUsers(chatroomUsers).then((chatroom) {
-      view.navigateToSelectedChatroom(chatroom);
+      onChatroomIdProcessed(chatroom);
     });
   }
 
@@ -57,10 +54,10 @@ class CreateChatroomBloc
   }
 
   @override
-  void close() {
+  Future<void> close() async {
     if (chatUserSubscription != null) {
       chatUserSubscription.cancel();
     }
-    super.close();
+    return super.close();
   }
 }
