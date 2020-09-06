@@ -1,20 +1,20 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../util/constants.dart';
-import 'login_response.dart';
-import 'user.dart';
-import 'firebase_repo.dart';
-import 'user_repo.dart';
+import 'package:toptal_chat/util/constants.dart';
+import 'package:toptal_chat/model/login_response.dart';
+import 'package:toptal_chat/model/user.dart';
+import 'package:toptal_chat/model/firebase_repo.dart';
+import 'package:toptal_chat/model/user_repo.dart';
 
 class LoginRepo {
   static LoginRepo _instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final Firestore _firestore;
+  final firebase.FirebaseAuth _auth = firebase.FirebaseAuth.instance;
+  final FirebaseFirestore _firestore;
 
   LoginRepo._internal(this._firestore);
 
@@ -25,17 +25,27 @@ class LoginRepo {
     return _instance;
   }
 
-  Future<LoginResponse> _signIn(AuthCredential credentials) async {
+  Future<LoginResponse> _signIn(firebase.AuthCredential credentials) async {
     final authResult = await _auth.signInWithCredential(credentials);
     if (authResult != null && authResult.user != null) {
       final user = authResult.user;
       final token = await UserRepo.getInstance().getFCMToken();
-      User serializedUser = User(user.uid, user.displayName, user.photoUrl, token);
+      User serializedUser = User(
+        user.uid,
+        user.displayName,
+        user.photoURL,
+        token,
+      );
       await _firestore
           .collection(FirestorePaths.USERS_COLLECTION)
-          .document(user.uid)
-          .setData(serializedUser.map, merge: true);
-      return User(user.uid, user.displayName, user.photoUrl, token);
+          .doc(user.uid)
+          .set(serializedUser.map, SetOptions(merge: true));
+      return User(
+        user.uid,
+        user.displayName,
+        user.photoURL,
+        token,
+      );
     } else {
       return LoginFailedResponse(ErrorMessages.NO_USER_FOUND);
     }
@@ -52,15 +62,13 @@ class LoginRepo {
 
   Future<LoginResponse> signInWithGoogle(GoogleSignInAccount account) async {
     final authentication = await account.authentication;
-    final credentials = GoogleAuthProvider.getCredential(
-        idToken: authentication.idToken,
-        accessToken: authentication.accessToken);
+    final credentials = firebase.GoogleAuthProvider.credential(
+        idToken: authentication.idToken, accessToken: authentication.accessToken);
     return _signIn(credentials);
   }
 
-  Future<LoginResponse> signInWithFacebook(FacebookLoginResult result) async {
-    final credentials = FacebookAuthProvider.getCredential(
-        accessToken: result.accessToken.token);
+  Future<LoginResponse> signInWithFacebook(LoginResult result) async {
+    final credentials = firebase.FacebookAuthProvider.credential(result.accessToken.token);
     return _signIn(credentials);
   }
 

@@ -1,5 +1,5 @@
-import 'message.dart';
-import 'user.dart';
+import 'package:toptal_chat/model/message.dart';
+import 'package:toptal_chat/model/user.dart';
 
 class SelectedChatroom {
   SelectedChatroom(this.id, this.displayName);

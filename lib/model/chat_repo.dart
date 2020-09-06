@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../util/constants.dart';
-import '../util/serialization_util.dart';
-import 'chatroom.dart';
-import 'firebase_repo.dart';
-import 'user.dart';
+import 'package:toptal_chat/util/constants.dart';
+import 'package:toptal_chat/util/serialization_util.dart';
+import 'package:toptal_chat/model/chatroom.dart';
+import 'package:toptal_chat/model/firebase_repo.dart';
+import 'package:toptal_chat/model/user.dart';
 
 class ChatRepo {
   static ChatRepo _instance;
 
-  final Firestore _firestore;
+  final FirebaseFirestore _firestore;
 
   final _chatUsersSubject = BehaviorSubject<List<User>>();
 
@@ -31,7 +31,7 @@ class ChatRepo {
         .collection(FirestorePaths.USERS_COLLECTION)
         .orderBy("displayName")
         .snapshots()
-        .map((data) => Deserializer.deserializeUsers(data.documents))
+        .map((data) => Deserializer.deserializeUsers(data.docs))
         .listen((users) {
       _chatUsersSubject.sink.add(users);
     });
@@ -42,7 +42,7 @@ class ChatRepo {
   }
 
   Future<SelectedChatroom> getChatroom(String chatroomId, User currentUser, User otherUser) async {
-    DocumentReference chatroomRef = _firestore.document(FirestorePaths.CHATROOMS_COLLECTION + "/" + chatroomId);
+    DocumentReference chatroomRef = _firestore.doc(FirestorePaths.CHATROOMS_COLLECTION + "/" + chatroomId);
     if (chatroomRef != null) {
       List<User> users = List(2);
       users[0] = otherUser;
@@ -53,15 +53,13 @@ class ChatRepo {
         print(error);
         return null;
       }
-    }
-    else {
+    } else {
       return null;
     }
   }
 
   Stream<List<Chatroom>> getChatroomsForUser(User user) {
-    DocumentReference userRef =
-        _firestore.document(FirestorePaths.USERS_COLLECTION + "/" + user.uid);
+    DocumentReference userRef = _firestore.doc(FirestorePaths.USERS_COLLECTION + "/" + user.uid);
     return _firestore
         .collection(FirestorePaths.CHATROOMS_COLLECTION)
         .where(
@@ -69,38 +67,29 @@ class ChatRepo {
           arrayContains: userRef,
         )
         .snapshots()
-        .map((data) => Deserializer.deserializeChatrooms(
-            data.documents, _chatUsersSubject.value));
+        .map((data) => Deserializer.deserializeChatrooms(data.docs, _chatUsersSubject.value));
   }
 
   Stream<Chatroom> getMessagesForChatroom(String chatroomId) {
-    return _firestore
-        .collection(FirestorePaths.CHATROOMS_COLLECTION)
-        .document(chatroomId)
-        .snapshots()
-        .map((data) {
-          Chatroom chatroom = Deserializer.deserializeChatroomMessages(data, _chatUsersSubject.value);
-          chatroom.messages.sort((message1, message2) => message1.timestamp.compareTo(message2.timestamp));
-          return chatroom;
+    return _firestore.collection(FirestorePaths.CHATROOMS_COLLECTION).doc(chatroomId).snapshots().map((data) {
+      Chatroom chatroom = Deserializer.deserializeChatroomMessages(data, _chatUsersSubject.value);
+      chatroom.messages.sort((message1, message2) => message1.timestamp.compareTo(message2.timestamp));
+      return chatroom;
     });
   }
 
   Future<SelectedChatroom> startChatroomForUsers(List<User> users) async {
-    DocumentReference userRef = _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .document(users[1].uid);
+    DocumentReference userRef = _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(users[1].uid);
     QuerySnapshot queryResults = await _firestore
         .collection(FirestorePaths.CHATROOMS_COLLECTION)
         .where("participants", arrayContains: userRef)
-        .getDocuments();
-    DocumentReference otherUserRef = _firestore
-        .collection(FirestorePaths.USERS_COLLECTION)
-        .document(users[0].uid);
-    DocumentSnapshot roomSnapshot = queryResults.documents.firstWhere((room) {
-      return room.data["participants"].contains(otherUserRef);
+        .get();
+    DocumentReference otherUserRef = _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(users[0].uid);
+    DocumentSnapshot roomSnapshot = queryResults.docs.firstWhere((room) {
+      return room.data()["participants"].contains(otherUserRef);
     }, orElse: () => null);
     if (roomSnapshot != null) {
-      return SelectedChatroom(roomSnapshot.documentID, users[0].displayName);
+      return SelectedChatroom(roomSnapshot.id, users[0].displayName);
     } else {
       Map<String, dynamic> chatroomMap = Map<String, dynamic>();
       chatroomMap["messages"] = List<String>(0);
@@ -108,25 +97,19 @@ class ChatRepo {
       participants[0] = otherUserRef;
       participants[1] = userRef;
       chatroomMap["participants"] = participants;
-      DocumentReference reference = await _firestore
-          .collection(FirestorePaths.CHATROOMS_COLLECTION)
-          .add(chatroomMap);
+      DocumentReference reference = await _firestore.collection(FirestorePaths.CHATROOMS_COLLECTION).add(chatroomMap);
       DocumentSnapshot chatroomSnapshot = await reference.get();
-      return SelectedChatroom(chatroomSnapshot.documentID, users[0].displayName);
+      return SelectedChatroom(chatroomSnapshot.id, users[0].displayName);
     }
   }
 
   Future<bool> sendMessageToChatroom(String chatroomId, User user, String message) async {
     try {
-      DocumentReference authorRef = _firestore.collection(FirestorePaths.USERS_COLLECTION).document(user.uid);
-      DocumentReference chatroomRef = _firestore.collection(FirestorePaths.CHATROOMS_COLLECTION).document(chatroomId);
-      Map<String, dynamic> serializedMessage = {
-        "author" : authorRef,
-        "timestamp" : DateTime.now(),
-        "value" : message
-      };
-      chatroomRef.updateData({
-        "messages" : FieldValue.arrayUnion([serializedMessage])
+      DocumentReference authorRef = _firestore.collection(FirestorePaths.USERS_COLLECTION).doc(user.uid);
+      DocumentReference chatroomRef = _firestore.collection(FirestorePaths.CHATROOMS_COLLECTION).doc(chatroomId);
+      Map<String, dynamic> serializedMessage = {"author": authorRef, "timestamp": DateTime.now(), "value": message};
+      chatroomRef.update({
+        "messages": FieldValue.arrayUnion([serializedMessage])
       });
       return true;
     } catch (e) {
