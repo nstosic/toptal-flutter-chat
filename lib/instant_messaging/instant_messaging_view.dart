@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../util/constants.dart';
-import '../model/message.dart';
-import 'instant_messaging_bloc.dart';
-import 'instant_messaging_state.dart';
+import 'package:toptal_chat/base/bloc_widget.dart';
+import 'package:toptal_chat/instant_messaging/instant_messaging_event.dart';
+import 'package:toptal_chat/util/constants.dart';
+import 'package:toptal_chat/model/message.dart';
+import 'package:toptal_chat/instant_messaging/instant_messaging_bloc.dart';
+import 'package:toptal_chat/instant_messaging/instant_messaging_state.dart';
 
 class InstantMessagingScreen extends StatefulWidget {
-  InstantMessagingScreen({Key key, @required this.displayName, @required this.chatroomId})
-      : super(key: key);
+  InstantMessagingScreen({Key key, @required this.displayName, @required this.chatroomId}) : super(key: key);
 
   final String displayName;
   final String chatroomId;
@@ -28,25 +29,9 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<InstantMessagingBloc>(
-      builder: (context) => InstantMessagingBloc(chatroomId),
-      child: InstantMessagingWidget(widget: widget),
-    );
-  }
-
-}
-
-class InstantMessagingWidget extends StatelessWidget {
-  const InstantMessagingWidget({Key key, @required this.widget}) : super(key: key);
-
-  final InstantMessagingScreen widget;
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.displayName)),
-      body: BlocBuilder(
-        bloc: BlocProvider.of<InstantMessagingBloc>(context),
+      body: BlocWidget<InstantMessagingEvent, InstantMessagingState, InstantMessagingBloc>(
         builder: (context, InstantMessagingState state) {
           if (state.error) {
             return Center(
@@ -64,8 +49,7 @@ class InstantMessagingWidget extends StatelessWidget {
                       child: Container(
                         margin: EdgeInsets.only(bottom: UIConstants.STANDARD_PADDING),
                         padding: EdgeInsets.symmetric(
-                            vertical: UIConstants.SMALLER_PADDING,
-                            horizontal: UIConstants.SMALLER_PADDING),
+                            vertical: UIConstants.SMALLER_PADDING, horizontal: UIConstants.SMALLER_PADDING),
                         child: TextField(
                           maxLines: null,
                           controller: widget._textEditingController,
@@ -113,6 +97,7 @@ class InstantMessagingWidget extends StatelessWidget {
             );
           }
         },
+        data: <String, dynamic>{'chatroomId': widget.chatroomId},
       ),
     );
   }
@@ -125,9 +110,7 @@ class InstantMessagingWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0)
-              ),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
               child: Image.network(url, width: 256),
             ),
           ],
@@ -137,9 +120,7 @@ class InstantMessagingWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0)
-              ),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
               child: Image.network(url, width: 256),
             ),
           ],
@@ -153,8 +134,7 @@ class InstantMessagingWidget extends StatelessWidget {
           style: TextStyle(color: Colors.white),
           textAlign: TextAlign.end,
         ),
-        decoration: BoxDecoration(
-            color: Colors.lightBlueAccent, borderRadius: BorderRadius.all(Radius.circular(6.0))),
+        decoration: BoxDecoration(color: Colors.lightBlueAccent, borderRadius: BorderRadius.all(Radius.circular(6.0))),
         padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
         margin: EdgeInsets.symmetric(
           vertical: UIConstants.SMALLER_PADDING / 2.0,
@@ -167,8 +147,7 @@ class InstantMessagingWidget extends StatelessWidget {
           message.value,
           style: TextStyle(color: Colors.white),
         ),
-        decoration: BoxDecoration(
-            color: Colors.blueAccent, borderRadius: BorderRadius.all(Radius.circular(6.0))),
+        decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.all(Radius.circular(6.0))),
         padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
         margin: EdgeInsets.symmetric(
           vertical: UIConstants.SMALLER_PADDING / 2.0,
@@ -190,7 +169,7 @@ class InstantMessagingWidget extends StatelessWidget {
   }
 
   void _openPictureDialog(BuildContext context) async {
-    File target = await ImagePicker.pickImage(source: ImageSource.gallery);
+    File target = File((await ImagePicker().getImage(source: ImageSource.gallery)).path);
     if (target != null) {
       _sendFile(context, target);
     }

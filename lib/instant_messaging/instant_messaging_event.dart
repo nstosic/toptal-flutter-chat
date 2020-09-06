@@ -1,4 +1,4 @@
-import '../model/message.dart';
+import 'package:toptal_chat/model/message.dart';
 
 abstract class InstantMessagingEvent {}
 

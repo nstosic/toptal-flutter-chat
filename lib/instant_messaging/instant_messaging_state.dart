@@ -1,4 +1,4 @@
-import '../model/message.dart';
+import 'package:toptal_chat/model/message.dart';
 
 class InstantMessagingState {
   final bool isLoading;
@@ -11,5 +11,6 @@ class InstantMessagingState {
 
   factory InstantMessagingState.messages(List<Message> messages) => InstantMessagingState._internal(false, messages);
 
-  factory InstantMessagingState.error(InstantMessagingState state) => InstantMessagingState._internal(state.isLoading, state.messages, error: true);
+  factory InstantMessagingState.error(InstantMessagingState state) =>
+      InstantMessagingState._internal(state.isLoading, state.messages, error: true);
 }
