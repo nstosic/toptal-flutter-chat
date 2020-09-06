@@ -1,4 +1,4 @@
-import '../model/chatroom.dart';
+import 'package:toptal_chat/model/chatroom.dart';
 
 abstract class MainEvent {}
 
