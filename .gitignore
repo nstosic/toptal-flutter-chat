@@ -28,6 +28,9 @@ conf/
 .pub-cache/
 .pub/
 build/
+.flutter-plugins-dependencies
+ios/Flutter/.last_build_id
+ios/Flutter/Flutter.podspec
 
 # Android related
 **/android/**/gradle-wrapper.jar
