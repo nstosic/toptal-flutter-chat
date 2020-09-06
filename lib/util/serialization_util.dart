@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../model/chatroom.dart';
-import '../model/message.dart';
-import '../model/user.dart';
+import 'package:toptal_chat/model/chatroom.dart';
+import 'package:toptal_chat/model/message.dart';
+import 'package:toptal_chat/model/user.dart';
 
 class Deserializer {
-
   static List<User> deserializeUsersFromReference(List<DocumentReference> references, List<User> users) {
-    return users.where((item) => references.any((reference) => reference.documentID == item.uid)).toList();
+    return users.where((item) => references.any((reference) => reference.id == item.uid)).toList();
   }
 
   static List<User> deserializeUsers(List<DocumentSnapshot> users) {
@@ -15,7 +14,12 @@ class Deserializer {
   }
 
   static User deserializeUser(DocumentSnapshot document) {
-    return User(document['uid'], document['displayName'], document['photoUrl'], document['fcmToken']);
+    return User(
+      document.data()['uid'],
+      document.data()['displayName'],
+      document.data()['photoUrl'],
+      document.data()['fcmToken'],
+    );
   }
 
   static List<Chatroom> deserializeChatrooms(List<DocumentSnapshot> chatrooms, List<User> users) {
@@ -24,17 +28,17 @@ class Deserializer {
 
   static Chatroom deserializeChatroom(DocumentSnapshot document, List<User> users) {
     List<DocumentReference> participantReferences = List<DocumentReference>(2);
-    participantReferences[0] = document['participants'][0];
-    participantReferences[1] = document['participants'][1];
+    participantReferences[0] = document.data()['participants'][0];
+    participantReferences[1] = document.data()['participants'][1];
     return Chatroom(deserializeUsersFromReference(participantReferences, users).toList(), List<Message>());
   }
 
   static Chatroom deserializeChatroomMessages(DocumentSnapshot document, List<User> users) {
     List<DocumentReference> participantReferences = List<DocumentReference>(2);
-    participantReferences[0] = document['participants'][0];
-    participantReferences[1] = document['participants'][1];
+    participantReferences[0] = document.data()['participants'][0];
+    participantReferences[1] = document.data()['participants'][1];
     Chatroom chatroom = Chatroom(deserializeUsersFromReference(participantReferences, users).toList(), List<Message>());
-    chatroom.messages.addAll(deserializeMessages(document['messages'], users));
+    chatroom.messages.addAll(deserializeMessages(document.data()['messages'], users));
     return chatroom;
   }
 
@@ -46,8 +50,7 @@ class Deserializer {
 
   static Message deserializeMessage(Map<String, dynamic> document, List<User> users) {
     DocumentReference authorReference = document['author'];
-    User author = users.firstWhere((user) => user.uid == authorReference.documentID);
+    User author = users.firstWhere((user) => user.uid == authorReference.id);
     return Message(author, document['timestamp'], document['value']);
   }
-
 }
