@@ -14,7 +14,7 @@ Note - if you clone this repository and try running the project, it'll fail beca
 
 # V2 refactor in progress
 
-As there's an ongoing process of refactoring [FlutterFire](https://github.com/FirebaseExtended/flutterfire/issues/2582) libraries to offer better multi-platform support.
+As there's an ongoing process of refactoring [FlutterFire](https://github.com/FirebaseExtended/flutterfire/issues/2582) libraries to offer better multi-platform support, this repo will also be going through refactoring to support the latest version of Firebase libraries and iOS 14.
 
 The current state of the master:
 - [x] iOS 14 support
