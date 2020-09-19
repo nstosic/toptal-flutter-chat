@@ -9,3 +9,5 @@ class MessageReceivedEvent extends InstantMessagingEvent {
 }
 
 class MessageSendErrorEvent extends InstantMessagingEvent {}
+
+class FileUploadingEvent extends InstantMessagingEvent {}

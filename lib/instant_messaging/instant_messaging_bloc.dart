@@ -46,6 +46,7 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
   }
 
   void sendFile(File file) async {
+    add(FileUploadingEvent());
     final String storagePath = await StorageRepo.getInstance().uploadFile(file);
     if (storagePath != null) {
       _sendFileUri(storagePath);
@@ -62,6 +63,8 @@ class InstantMessagingBloc extends Bloc<InstantMessagingEvent, InstantMessagingS
   Stream<InstantMessagingState> mapEventToState(InstantMessagingEvent event) async* {
     if (event is MessageReceivedEvent) {
       yield InstantMessagingState.messages(event.messages);
+    } else if (event is FileUploadingEvent) {
+      yield InstantMessagingState.uploading();
     } else if (event is MessageSendErrorEvent) {
       yield InstantMessagingState.error(state);
     }

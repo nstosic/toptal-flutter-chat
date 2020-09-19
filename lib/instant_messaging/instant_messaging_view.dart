@@ -37,6 +37,13 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
             return Center(
               child: Text("An error ocurred"),
             );
+          } else if (state.isLoading) {
+            return Container(
+              color: Colors.grey[400],
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           } else {
             return Column(
               mainAxisSize: MainAxisSize.max,
@@ -106,24 +113,22 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
     if (message.value.startsWith("_uri:")) {
       final String url = message.value.substring("_uri:".length);
       if (message.outgoing) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
-              child: Image.network(url, width: 256),
-            ),
-          ],
+        return Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
+          padding: const EdgeInsets.only(
+            top: UIConstants.SMALLER_PADDING,
+            left: UIConstants.BIGGER_PADDING,
+          ),
+          child: Image.network(url, width: 256.0),
         );
       } else {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
-              child: Image.network(url, width: 256),
-            ),
-          ],
+        return Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8.0)),
+          padding: const EdgeInsets.only(
+            top: UIConstants.SMALLER_PADDING,
+            right: UIConstants.BIGGER_PADDING,
+          ),
+          child: Image.network(url, width: 256.0),
         );
       }
     }
@@ -136,9 +141,9 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
         ),
         decoration: BoxDecoration(color: Colors.lightBlueAccent, borderRadius: BorderRadius.all(Radius.circular(6.0))),
         padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
-        margin: EdgeInsets.symmetric(
-          vertical: UIConstants.SMALLER_PADDING / 2.0,
-          horizontal: 0.0,
+        margin: EdgeInsets.only(
+          top: UIConstants.SMALLER_PADDING,
+          left: UIConstants.BIGGER_PADDING,
         ),
       );
     } else {
@@ -149,9 +154,9 @@ class _InstantMessagingState extends State<InstantMessagingScreen> {
         ),
         decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.all(Radius.circular(6.0))),
         padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
-        margin: EdgeInsets.symmetric(
-          vertical: UIConstants.SMALLER_PADDING / 2.0,
-          horizontal: 0.0,
+        margin: EdgeInsets.only(
+          top: UIConstants.SMALLER_PADDING,
+          right: UIConstants.BIGGER_PADDING,
         ),
       );
     }

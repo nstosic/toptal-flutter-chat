@@ -11,6 +11,8 @@ class InstantMessagingState {
 
   factory InstantMessagingState.messages(List<Message> messages) => InstantMessagingState._internal(false, messages);
 
+  factory InstantMessagingState.uploading() => InstantMessagingState._internal(true, List<Message>(0));
+
   factory InstantMessagingState.error(InstantMessagingState state) =>
       InstantMessagingState._internal(state.isLoading, state.messages, error: true);
 }
