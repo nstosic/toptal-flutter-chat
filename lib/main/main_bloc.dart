@@ -1,31 +1,29 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 
-import 'main_event.dart';
-import 'main_state.dart';
-import 'main_view.dart';
-import '../model/user.dart';
-import '../model/chatroom.dart';
-import '../model/login_repo.dart';
-import '../model/user_repo.dart';
-import '../model/chat_repo.dart';
-import '../util/util.dart';
+import 'package:toptal_chat/main/main_event.dart';
+import 'package:toptal_chat/main/main_state.dart';
+import 'package:toptal_chat/model/user.dart';
+import 'package:toptal_chat/model/chatroom.dart';
+import 'package:toptal_chat/model/login_repo.dart';
+import 'package:toptal_chat/model/user_repo.dart';
+import 'package:toptal_chat/model/chat_repo.dart';
+import 'package:toptal_chat/util/util.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
-  StreamSubscription<List<Chatroom>> chatroomsSubscription;
-
-  void logout(MainWidget view) {
-    LoginRepo.getInstance().signOut().then((success) {
-      if (success) {
-        view.navigateToLogin();
-      }
-    });
+  MainBloc(MainState initialState) : super(initialState) {
+    retrieveUserChatrooms();
   }
 
-  @override
-  MainState get initialState {
-    retrieveUserChatrooms();
-    return MainState.initial();
+  StreamSubscription<List<Chatroom>> chatroomsSubscription;
+
+  void logout(VoidCallback onLogout) {
+    LoginRepo.getInstance().signOut().then((success) {
+      if (success) {
+        onLogout();
+      }
+    });
   }
 
   void retrieveUserChatrooms() async {
@@ -45,13 +43,13 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     }
   }
 
-  void retrieveChatroomForParticipant(User user, MainWidget view) async {
+  void retrieveChatroomForParticipant(User user, Function(SelectedChatroom) onChatroomProcessed) async {
     final currentUser = await UserRepo.getInstance().getCurrentUser();
     List<User> users = List<User>(2);
     users[0] = user;
     users[1] = currentUser;
     ChatRepo.getInstance().startChatroomForUsers(users).then((chatroom) {
-      view.navigateToChatroom(chatroom);
+      onChatroomProcessed(chatroom);
     });
   }
 
@@ -67,10 +65,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   }
 
   @override
-  void close() {
+  Future<void> close() async {
     if (chatroomsSubscription != null) {
       chatroomsSubscription.cancel();
     }
-    super.close();
+    return super.close();
   }
 }

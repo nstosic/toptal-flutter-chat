@@ -1,5 +1,6 @@
-import 'login_response.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+
+import 'package:toptal_chat/model/login_response.dart';
 
 class User extends LoginResponse {
   final String uid;
@@ -9,14 +10,15 @@ class User extends LoginResponse {
 
   User(this.uid, this.displayName, this.photoUrl, this.fcmToken);
 
-  User.fromFirebaseUser(FirebaseUser firebaseUser) : this(firebaseUser.uid, firebaseUser.displayName, firebaseUser.photoUrl, "");
+  User.fromFirebaseUser(firebase.User firebaseUser)
+      : this(
+          firebaseUser.uid,
+          firebaseUser.displayName,
+          firebaseUser.photoURL,
+          "",
+        );
 
   Map<String, dynamic> get map {
-    return {
-      "uid": uid,
-      "displayName": displayName,
-      "photoUrl": photoUrl,
-      "fcmToken": fcmToken
-    };
+    return {"uid": uid, "displayName": displayName, "photoUrl": photoUrl, "fcmToken": fcmToken};
   }
 }

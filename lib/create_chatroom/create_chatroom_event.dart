@@ -1,4 +1,4 @@
-import '../model/user.dart';
+import 'package:toptal_chat/model/user.dart';
 
 abstract class CreateChatroomEvent {}
 

@@ -1,5 +1,5 @@
-import '../model/user.dart';
-import '../model/chatroom.dart';
+import 'package:toptal_chat/model/user.dart';
+import 'package:toptal_chat/model/chatroom.dart';
 
 class CreateChatroomAction {
   CreateChatroomAction(this.chatroom, this.canceled);
@@ -15,14 +15,11 @@ class CreateChatroomState {
 
   CreateChatroomState._internal(this.users, this.isLoading, {this.action});
 
-  factory CreateChatroomState.initial() =>
-      CreateChatroomState._internal(List<User>(0), true);
+  factory CreateChatroomState.initial() => CreateChatroomState._internal(List<User>(0), true);
 
-  factory CreateChatroomState.isLoading(
-          bool isLoading, CreateChatroomState state) =>
+  factory CreateChatroomState.isLoading(bool isLoading, CreateChatroomState state) =>
       CreateChatroomState._internal(state.users, isLoading);
 
-  factory CreateChatroomState.users(
-          List<User> users, CreateChatroomState state) =>
+  factory CreateChatroomState.users(List<User> users, CreateChatroomState state) =>
       CreateChatroomState._internal(users, state.isLoading);
 }

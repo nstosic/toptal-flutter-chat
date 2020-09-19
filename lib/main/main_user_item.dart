@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../model/user.dart';
-import '../util/constants.dart';
+import 'package:toptal_chat/model/user.dart';
+import 'package:toptal_chat/util/constants.dart';
 
 class UserItem extends StatelessWidget {
   UserItem({Key key, @required this.user}) : super(key: key);
@@ -13,9 +13,7 @@ class UserItem extends StatelessWidget {
     return Row(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.symmetric(
-              horizontal: 0,
-              vertical: UIConstants.SMALLER_PADDING),
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: UIConstants.SMALLER_PADDING),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(48.0),
             child: Image.network(

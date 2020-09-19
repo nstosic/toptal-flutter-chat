@@ -1,38 +1,35 @@
 import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-import '../model/user_repo.dart';
-import '../model/chat_repo.dart';
-import '../model/user.dart';
-import '../instant_messaging/instant_messaging_view.dart';
+import 'package:toptal_chat/model/user_repo.dart';
+import 'package:toptal_chat/model/chat_repo.dart';
+import 'package:toptal_chat/model/user.dart';
+import 'package:toptal_chat/instant_messaging/instant_messaging_view.dart';
 
-class PushNotificationsHandler {
-  final GlobalKey<NavigatorState> appStateKey;
-  PushNotificationsHandler(this.appStateKey);
+class PushNotificationsHandler extends NavigatorObserver {
+  PushNotificationsHandler() {
+    _setup();
+  }
 
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
-  void setup() {
+  void _setup() {
     if (Platform.isIOS) {
       _requestPermissionOniOS();
     } else if (Platform.isAndroid) {
       _firebaseMessaging.getToken().then((token) => UserRepo.getInstance().setFCMToken(token));
     }
 
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
-        print("Incoming notification message:");
-        print(message);
-        return Future.microtask(() => true);
-      },
-      onResume: (Map<String, dynamic> message) {
-        return _handleIncomingNotification(message);
-      },
-      onLaunch: (Map<String, dynamic> message) {
-        return _handleIncomingNotification(message);
-      }
-    );
+    _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+      print("Incoming notification message:");
+      print(message);
+      return Future.microtask(() => true);
+    }, onResume: (Map<String, dynamic> message) {
+      return _handleIncomingNotification(message);
+    }, onLaunch: (Map<String, dynamic> message) {
+      return _handleIncomingNotification(message);
+    });
   }
 
   void _requestPermissionOniOS() {
@@ -52,13 +49,23 @@ class PushNotificationsHandler {
       return false;
     }
     ChatRepo.getInstance()
-        .getChatroom(data["chatroom_id"], currentUser, otherUser)
-        .then((chatroom) {
-          appStateKey.currentState.pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => InstantMessagingScreen(displayName: chatroom.displayName, chatroomId: chatroom.id)),
-              (Route<dynamic> route) => route.isFirst);
-          return true;
-        });
+        .getChatroom(
+      data["chatroom_id"],
+      currentUser,
+      otherUser,
+    )
+        .then(
+      (chatroom) {
+        navigator.pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => InstantMessagingScreen(
+                      displayName: chatroom.displayName,
+                      chatroomId: chatroom.id,
+                    )),
+            (Route<dynamic> route) => route.isFirst);
+        return true;
+      },
+    );
     return false;
   }
 }

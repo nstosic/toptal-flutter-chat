@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toptal_chat/base/bloc_widget.dart';
+import 'package:toptal_chat/main/main_event.dart';
 
 import 'main_bloc.dart';
 import 'main_state.dart';
@@ -16,40 +18,23 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainState extends State<MainScreen> {
-
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MainBloc>(
-      builder: (context) => MainBloc(),
-      child: MainWidget(widget: widget, widgetState: this)
-    );
-  }
-
-}
-
-class MainWidget extends StatelessWidget {
-  const MainWidget({Key key, @required this.widget, @required this.widgetState}) : super(key: key);
-
-  final MainScreen widget;
-  final _MainState widgetState;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Toptal Chat'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.lock_open),
-            onPressed: () {
-              BlocProvider.of<MainBloc>(context).logout(this);
-            },
-          )
-        ],
-      ),
-      body: BlocBuilder(
-          bloc: BlocProvider.of<MainBloc>(context),
-          builder: (context, MainState state) {
+    return BlocWidget<MainEvent, MainState, MainBloc>(
+      builder: (BuildContext context, MainState state) => Scaffold(
+        appBar: AppBar(
+          title: Text('Toptal Chat'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.lock_open),
+              onPressed: () {
+                BlocProvider.of<MainBloc>(context).logout(navigateToLogin);
+              },
+            )
+          ],
+        ),
+        body: Builder(
+          builder: (BuildContext context) {
             Widget content;
             if (state.isLoading) {
               content = Center(
@@ -69,17 +54,22 @@ class MainWidget extends StatelessWidget {
                 padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
                 itemBuilder: (context, index) {
                   return InkWell(
-                      child: _buildItem(state.chatrooms[index]),
-                      onTap: () {
-                        BlocProvider.of<MainBloc>(context).retrieveChatroomForParticipant(
-                            state.chatrooms[index].participants.first, this);
-                      });
+                    child: _buildItem(state.chatrooms[index]),
+                    onTap: () {
+                      BlocProvider.of<MainBloc>(context).retrieveChatroomForParticipant(
+                        state.chatrooms[index].participants.first,
+                        navigateToChatroom,
+                      );
+                    },
+                  );
                 },
                 itemCount: state.chatrooms.length,
               );
             }
             return _wrapContentWithFab(context, content);
-          }),
+          },
+        ),
+      ),
     );
   }
 
@@ -101,7 +91,7 @@ class MainWidget extends StatelessWidget {
   }
 
   void _clickAddChat() {
-    NavigationHelper.navigateToAddChat(widgetState.context, addToBackStack: true);
+    NavigationHelper.navigateToAddChat(context, addToBackStack: true);
   }
 
   UserItem _buildItem(Chatroom chatroom) {
@@ -109,10 +99,15 @@ class MainWidget extends StatelessWidget {
   }
 
   void navigateToLogin() {
-    NavigationHelper.navigateToLogin(widgetState.context);
+    NavigationHelper.navigateToLogin(context);
   }
 
   void navigateToChatroom(SelectedChatroom chatroom) {
-    NavigationHelper.navigateToInstantMessaging(widgetState.context, chatroom.displayName, chatroom.id, addToBackStack: true);
+    NavigationHelper.navigateToInstantMessaging(
+      context,
+      chatroom.displayName,
+      chatroom.id,
+      addToBackStack: true,
+    );
   }
 }
