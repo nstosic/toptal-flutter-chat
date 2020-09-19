@@ -42,6 +42,7 @@ ios/Flutter/Flutter.podspec
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
 **/android/*.keystore
+**/android/*.jks
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
