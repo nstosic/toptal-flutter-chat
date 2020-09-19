@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Toptal Chat</string>
+	<string>No Scope Code Chat</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -60,6 +60,8 @@
 	<string>We need your permission in order to send photos directly from your camera feed.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need your permission in order for you to make videos with voice.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>No Scope Code Chat needs access to the photo library to send image files.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -84,7 +86,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Toptal Chat needs access to the photo library to send image files.</string>
 </dict>
 </plist>
