@@ -1,4 +1,4 @@
-package rs.co.estel.chat
+package com.noscopecode.chat
 
 import android.os.Bundle
 
