@@ -20,53 +20,55 @@ class MainScreen extends StatefulWidget {
 class _MainState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Toptal Chat'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.lock_open),
-            onPressed: () {
-              BlocProvider.of<MainBloc>(context).logout(navigateToLogin);
-            },
-          )
-        ],
-      ),
-      body: BlocWidget<MainEvent, MainState, MainBloc>(
-        builder: (BuildContext context, MainState state) {
-          Widget content;
-          if (state.isLoading) {
-            content = Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 4.0,
-              ),
-            );
-          } else if (state.chatrooms.isEmpty) {
-            content = Center(
-              child: Text(
-                "Looks like you don't have any active chatrooms\nLet's start one right now!",
-                textAlign: TextAlign.center,
-              ),
-            );
-          } else {
-            content = ListView.builder(
-              padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  child: _buildItem(state.chatrooms[index]),
-                  onTap: () {
-                    BlocProvider.of<MainBloc>(context).retrieveChatroomForParticipant(
-                      state.chatrooms[index].participants.first,
-                      navigateToChatroom,
-                    );
-                  },
-                );
+    return BlocWidget<MainEvent, MainState, MainBloc>(
+      builder: (BuildContext context, MainState state) => Scaffold(
+        appBar: AppBar(
+          title: Text('Toptal Chat'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.lock_open),
+              onPressed: () {
+                BlocProvider.of<MainBloc>(context).logout(navigateToLogin);
               },
-              itemCount: state.chatrooms.length,
-            );
-          }
-          return _wrapContentWithFab(context, content);
-        },
+            )
+          ],
+        ),
+        body: Builder(
+          builder: (BuildContext context) {
+            Widget content;
+            if (state.isLoading) {
+              content = Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 4.0,
+                ),
+              );
+            } else if (state.chatrooms.isEmpty) {
+              content = Center(
+                child: Text(
+                  "Looks like you don't have any active chatrooms\nLet's start one right now!",
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else {
+              content = ListView.builder(
+                padding: EdgeInsets.all(UIConstants.SMALLER_PADDING),
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    child: _buildItem(state.chatrooms[index]),
+                    onTap: () {
+                      BlocProvider.of<MainBloc>(context).retrieveChatroomForParticipant(
+                        state.chatrooms[index].participants.first,
+                        navigateToChatroom,
+                      );
+                    },
+                  );
+                },
+                itemCount: state.chatrooms.length,
+              );
+            }
+            return _wrapContentWithFab(context, content);
+          },
+        ),
       ),
     );
   }
