@@ -12,13 +12,14 @@ This project is developed to work with `flutter channel stable`. There is no gua
 
 Note - if you clone this repository and try running the project, it'll fail because I've removed API keys for Facebook and Firebase. Refer to the [Facebook](https://developers.facebook.com/docs/facebook-login/) or [Firebase](https://firebase.google.com/docs/flutter/setup) official documentation for a step-by-step guide to setting up the project.
 
-# V2 refactor in progress
+# V2 refactor
 
-As there's an ongoing process of refactoring [FlutterFire](https://github.com/FirebaseExtended/flutterfire/issues/2582) libraries to offer better multi-platform support, this repo will also be going through refactoring to support the latest version of Firebase libraries and iOS 14.
+As there's an ongoing process of refactoring [FlutterFire](https://github.com/FirebaseExtended/flutterfire/issues/2582) libraries to offer better multi-platform support, this repo has also been through refactoring to support the latest version of Firebase libraries and iOS 14.
 
 The current state of the master:
+
 - [x] iOS 14 support
 - [x] firebase_auth updated
 - [x] cloud_firestore updated
-- [ ] firebase_messaging updated
-- [ ] firebase_storage
+- [x] firebase_messaging updated
+- [x] firebase_storage
