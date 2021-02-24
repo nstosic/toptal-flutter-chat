@@ -24,13 +24,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   void onLoginFacebook() async {
     add(LoginEventInProgress());
     final facebookSignInRepo = FacebookAuth.instance;
-    final signInResult = await facebookSignInRepo.login();
-    if (signInResult.status == 200) {
+    try {
+      final signInResult = await facebookSignInRepo.login();
       LoginRepo.getInstance().signInWithFacebook(signInResult);
-    } else if (signInResult.status == 403) {
-      add(LogoutEvent());
-    } else {
-      add(LoginErrorEvent("An error occurred."));
+    } on FacebookAuthException catch (ex) {
+      if (ex.errorCode != 'CANCELLED') {
+        add(LoginErrorEvent("An error occurred. ${ex.message}"));
+      } else {
+        add(LogoutEvent());
+      }
     }
   }
 

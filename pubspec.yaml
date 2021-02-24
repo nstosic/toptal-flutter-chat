@@ -21,16 +21,16 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   flutter_bloc: 6.0.4
-  firebase_core: 0.5.0
-  firebase_auth: 0.18.0+1
-  firebase_messaging: 7.0.0
-  cloud_firestore: 0.14.0+2
-  firebase_storage: 4.0.0
-  google_sign_in: 4.5.3
-  flutter_facebook_auth: 0.2.4
-  shared_preferences: 0.5.10
-  image_picker: 0.6.7+7
-  rxdart: 0.24.1
+  firebase_core: 0.7.0
+  firebase_auth: 0.20.1
+  firebase_messaging: 8.0.0-dev.15
+  cloud_firestore: 0.16.0+1
+  firebase_storage: 7.0.0
+  google_sign_in: 4.5.9
+  flutter_facebook_auth: 2.0.2
+  shared_preferences: 0.5.12+4
+  image_picker: 0.6.7+22
+  rxdart: 0.25.0
 
 dev_dependencies:
   test: ^1.5.3

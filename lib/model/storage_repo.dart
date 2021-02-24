@@ -17,21 +17,15 @@ class StorageRepo {
   }
 
   Future<String> uploadFile(File file) async {
-    final StorageUploadTask uploadTask = _firebaseStorage.ref()
-        .child(file.uri.pathSegments.last)
-        .putFile(file);
-    StorageTaskSnapshot result = await uploadTask.onComplete;
-    if (result.error == 0) {
+    final UploadTask uploadTask = _firebaseStorage.ref().child(file.uri.pathSegments.last).putFile(file);
+    TaskSnapshot result = await uploadTask;
+    if (result.bytesTransferred != result.totalBytes) {
       return null;
     }
-    return result.storageMetadata.path;
+    return result.ref.fullPath;
   }
 
   Future<String> decodeUri(String uri) async {
-    return _firebaseStorage
-        .ref()
-        .child(uri)
-        .getDownloadURL()
-        .then((result) => result.toString());
+    return _firebaseStorage.ref().child(uri).getDownloadURL().then((result) => result.toString());
   }
 }

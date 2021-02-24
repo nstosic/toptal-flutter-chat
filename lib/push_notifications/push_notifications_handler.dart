@@ -12,31 +12,28 @@ class PushNotificationsHandler extends NavigatorObserver {
     _setup();
   }
 
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
   void _setup() {
     if (Platform.isIOS) {
       _requestPermissionOniOS();
     } else if (Platform.isAndroid) {
-      _firebaseMessaging.getToken().then((token) => UserRepo.getInstance().setFCMToken(token));
+      FirebaseMessaging.instance.getToken().then((token) => UserRepo.getInstance().setFCMToken(token));
     }
 
-    _firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
-      print("Incoming notification message:");
-      print(message);
-      return Future.microtask(() => true);
-    }, onResume: (Map<String, dynamic> message) {
-      return _handleIncomingNotification(message);
-    }, onLaunch: (Map<String, dynamic> message) {
-      return _handleIncomingNotification(message);
+    FirebaseMessaging.onMessage.listen((message) {
+      return _handleIncomingNotification(message.data);
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      return _handleIncomingNotification(message.data);
     });
   }
 
   void _requestPermissionOniOS() {
-    _firebaseMessaging.requestNotificationPermissions(IosNotificationSettings(sound: true, badge: true, alert: true));
-    _firebaseMessaging.onIosSettingsRegistered.first.then((settings) {
-      if (settings.alert) {
-        _firebaseMessaging.getToken().then((token) => UserRepo.getInstance().setFCMToken(token));
+    final permission = FirebaseMessaging.instance.requestPermission(sound: true, badge: true, alert: true);
+
+    permission.then((result) {
+      if (result.alert == AppleNotificationSetting.enabled) {
+        FirebaseMessaging.instance.getToken().then((token) => UserRepo.getInstance().setFCMToken(token));
       }
     });
   }
