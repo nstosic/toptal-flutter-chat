@@ -67,8 +67,8 @@ class LoginRepo {
     return _signIn(credentials);
   }
 
-  Future<LoginResponse> signInWithFacebook(LoginResult result) async {
-    final credentials = firebase.FacebookAuthProvider.credential(result.accessToken.token);
+  Future<LoginResponse> signInWithFacebook(AccessToken accessToken) async {
+    final credentials = firebase.FacebookAuthProvider.credential(accessToken.token);
     return _signIn(credentials);
   }
 

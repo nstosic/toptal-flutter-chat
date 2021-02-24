@@ -25,9 +25,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     add(LoginEventInProgress());
     final facebookSignInRepo = FacebookAuth.instance;
     final signInResult = await facebookSignInRepo.login();
-    if (signInResult.status == 200) {
+    if (signInResult?.token?.isNotEmpty ?? false) {
       LoginRepo.getInstance().signInWithFacebook(signInResult);
-    } else if (signInResult.status == 403) {
+    } else if (signInResult.userId == null) {
       add(LogoutEvent());
     } else {
       add(LoginErrorEvent("An error occurred."));
